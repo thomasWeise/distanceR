@@ -18,3 +18,4 @@ RoxygenNote: 6.0.1.9000
 Collate: 
     'indexing.R'
     'create.R'
+    'distApply.R'
