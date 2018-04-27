@@ -10,16 +10,7 @@
 #' @include indexing.R
 dist.apply.n <- function(n, FUN) {
   stopifnot(n > 1L);
-  res <- vector(mode="numeric", length=dist.slots(n));
-  index <- 0L;
-  for(i in seq_len(n-1L)) {
-    for(j in seq.int(from=(i+1L), to=n, by=1L)) {
-      index <- (index + 1L);
-      res[index] <- FUN(i, j);
-    }
-  }
-  stopifnot(identical(index, length(res)));
-  res
+  return(dist.apply(X=1:n, FUN=FUN));
 }
 
 #' @title Fill Vector with Values for a Distance Matrix
@@ -45,5 +36,5 @@ dist.apply <- function(X, FUN) {
     }
   }
   stopifnot(identical(index, length(res)));
-  res
+  return(res);
 }
