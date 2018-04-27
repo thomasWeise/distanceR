@@ -7,7 +7,6 @@
 #'   objects to compare
 #' @return a vector of length \code{n(n-1)/2} with the results of \code{FUN}
 #' @export dist.apply.n
-#' @include indexing.R
 dist.apply.n <- function(n, FUN) {
   stopifnot(n > 1L);
   return(dist.apply(X=1:n, FUN=FUN));
@@ -18,12 +17,13 @@ dist.apply.n <- function(n, FUN) {
 #'   matrix by applying a function \code{FUN} to all pairings that arise when
 #'   comparing all the objects in \code{X}.
 #' @param X objects to compare
-#' @param FUN the function to apply to all index pairs \code{i}, \code{j} of
-#'   objects to compare
+#' @param FUN the function to apply to all pairs of elements \code{a}, \code{b}
+#'   from \code{X}
 #' @return a vector of length \code{n(n-1)/2} with the results of \code{FUN}
 #' @export dist.apply
 #' @include indexing.R
-dist.apply <- function(X, FUN) {
+#' @include distances.R
+dist.apply <- function(X, FUN=distance.euclidean) {
   n <- length(X);
   stopifnot(n > 1L);
   res <- vector(mode="numeric", length=dist.slots(n));

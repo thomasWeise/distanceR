@@ -2,10 +2,12 @@
 
 export(dist.apply)
 export(dist.apply.n)
+export(dist.apply.samples)
 export(dist.create)
 export(dist.get)
 export(dist.ij)
 export(dist.index)
 export(dist.indexes)
 export(dist.slots)
+export(distance.euclidean)
 importFrom(stats,dist)

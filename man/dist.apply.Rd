@@ -4,13 +4,13 @@
 \alias{dist.apply}
 \title{Fill Vector with Values for a Distance Matrix}
 \usage{
-dist.apply(X, FUN)
+dist.apply(X, FUN = distance.euclidean)
 }
 \arguments{
 \item{X}{objects to compare}
 
-\item{FUN}{the function to apply to all index pairs \code{i}, \code{j} of
-objects to compare}
+\item{FUN}{the function to apply to all pairs of elements \code{a}, \code{b}
+from \code{X}}
 }
 \value{
 a vector of length \code{n(n-1)/2} with the results of \code{FUN}

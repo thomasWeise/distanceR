@@ -18,4 +18,6 @@ RoxygenNote: 6.0.1.9000
 Collate: 
     'indexing.R'
     'create.R'
+    'distances.R'
     'distApply.R'
+    'distApplySamples.R'
