@@ -8,13 +8,26 @@
 #' @return \code{0L} if \code{i == j}, else the index in the
 #'   \code{\link[stats]{dist}} object
 #' @export dist.index
-dist.index <- function(i, j, n){ # given row, column, and n, return index
+dist.index <- function(i, j, n) { # given row, column, and n, return index
   if(i == j) { 0L
   } else if(i > j) {
-    n*(j-1L) - (j*(j-1L))/2L + i - j
+    n*(j-1L) - ((j*(j-1L)) %/% 2L) + i - j
   } else {
-    n*(i-1L) - (i*(i-1L))/2L + j - i
+    n*(i-1L) - ((i*(i-1L)) %/% 2L) + j - i
   }
+}
+
+#' @title Get the Number of Slots in a Distance Matrix
+#' @description This function receives the number \code{n} of objects to compare
+#'   and computes how many different distances will be stored in a distance
+#'   matrix, i.e., what the number of slots of a \code{\link[stats]{dist}}
+#'   object will be.
+#' @param n the number of objects to compare
+#' @return the required number of slots in a distance matrix
+#' @export dist.slots
+dist.slots <- function(n) {
+  if(n > 1L) { (n * (n - 1L)) %/% 2L }
+  else { 0L }
 }
 
 #' @title Compute the Indices of the Two Objects Corresponding to a
@@ -27,8 +40,8 @@ dist.index <- function(i, j, n){ # given row, column, and n, return index
 #' @return a vector with the two indices
 #' @export dist.ij
 dist.ij <- function(index,n) { # given index, return row and column
-  nr = ceiling(n-(1L + sqrt(1+4L*((n*n)-n-2L*index)))/2L);
-  c(nr, n-(2L*n-nr+1L)*nr/2L+index+nr)
+  nr = as.integer(ceiling(n - (1L + sqrt(1+4L*((n*n) - n - 2L*index))) / 2L));
+  c(nr, n - (((2L*n - nr+1L)*nr) %/% 2L) + index + nr)
 }
 
 #' @title Compute the Distance between Two Objects based on a
@@ -45,9 +58,9 @@ dist.ij <- function(index,n) { # given index, return row and column
 dist.get <- function(distObj, i, j, n=attr(x=distObj, which="Size", exact=TRUE)){
   if(i == j) 0L else distObj[
     if(i > j) {
-    n*(j-1L) - (j*(j-1L))/2L + i - j
+    n*(j-1L) - ((j*(j-1L))) %/% 2L + i - j
   } else {
-    n*(i-1L) - (i*(i-1L))/2L + j - i
+    n*(i-1L) - ((i*(i-1L)) %/% 2L) + j - i
   }]
 }
 

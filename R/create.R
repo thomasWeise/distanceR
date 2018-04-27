@@ -6,12 +6,13 @@
 #' @return an instance \code{\link[stats]{dist}}
 #' @export dist.create
 #' @importFrom stats dist
+#' @include indexing.R
 dist.create <- function(distances, names) {
   distances <- force(distances);
   names <- force(names);
 
   n <- length(names);
-  stopifnot(n > 1L, identical(length(distances), (n*(n-1L)) %/% 2L));
+  stopifnot(n > 1L, identical(length(distances), dist.slots(n)));
 
   attributes(distances) <- list(Size = n,
                                 Labels = names,
