@@ -11,12 +11,7 @@ dist.create <- function(distances, names) {
   names <- force(names);
 
   n <- length(names);
-  if(n <= 1L) {
-    return(stop("There must be at least two elements for creating a distance matrix."));
-  }
-  if(!(identical(length(distances), n*(n-1L) %/% 2L))) {
-    return(stop("Lengths of names and distances do not match."));
-  }
+  stopifnot(n > 1L, identical(length(distances), (n*(n-1L)) %/% 2L));
 
   attributes(distances) <- list(Size = n,
                                 Labels = names,

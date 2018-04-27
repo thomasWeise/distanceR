@@ -1,8 +1,16 @@
 library("distanceR")
 context("create")
 
-
 test_that("Test create 1", {
+  dists <- vapply(X=dist.indexes(2),
+                  FUN=function(id) (id[1] - id[2])^2,
+                  FUN.VALUE = NaN)
+  dm <- dist.create(dists, c("A", "B"));
+  expect_is(dm, "dist");
+  hclust(dm)
+})
+
+test_that("Test create 2", {
   dists <- vapply(X=dist.indexes(5),
                   FUN=function(id) (id[1] - id[2])^2,
                   FUN.VALUE = NaN)
