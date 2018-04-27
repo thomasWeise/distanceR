@@ -61,6 +61,8 @@ dist.get <- function(distObj, i, j, n=attr(x=distObj, which="Size", exact=TRUE))
 #'   same style and order as in \code{\link[stats]{dist}} objects
 #' @export dist.indexes
 dist.indexes <- function(n) {
-  if(n>1L) unlist(lapply(X=1L:(n-1L), FUN=function(i) lapply(X=(i+1L):n, FUN=function(j) c(i,j))),  recursive = FALSE)
+  if(n>1L) unlist(lapply(X=seq_len(n-1L),
+                         FUN=function(i) lapply(X=seq.int(from=(i+1L), to=n, by=1L),
+                         FUN=function(j) c(i,j))), recursive = FALSE)
   else list()
 }

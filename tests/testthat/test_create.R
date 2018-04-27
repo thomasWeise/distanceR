@@ -10,3 +10,11 @@ test_that("Test create 1", {
   expect_is(dm, "dist");
   hclust(dm)
 })
+
+test_that("Test create 2", {
+  expect_error(dist.create(NULL, NULL));
+  expect_error(dist.create(NULL, c("a", "b")));
+  expect_error(dist.create(c(1), NULL));
+  expect_error(dist.create(c(1), c("a", "b", "c")));
+  expect_error(dist.create(c(1, 3), c("a", "b", "c")));
+})
