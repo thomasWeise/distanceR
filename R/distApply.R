@@ -6,15 +6,42 @@
 #' @param FUN the function to apply to all index pairs \code{i}, \code{j} of
 #'   objects to compare
 #' @return a vector of length \code{n(n-1)/2} with the results of \code{FUN}
-#' @export dist.apply
+#' @export dist.apply.n
 #' @include indexing.R
-dist.apply <- function(n, FUN) {
+dist.apply.n <- function(n, FUN) {
+  stopifnot(n > 1L);
   res <- vector(mode="numeric", length=dist.slots(n));
   index <- 0L;
   for(i in seq_len(n-1L)) {
     for(j in seq.int(from=(i+1L), to=n, by=1L)) {
       index <- (index + 1L);
       res[index] <- FUN(i, j);
+    }
+  }
+  stopifnot(identical(index, length(res)));
+  res
+}
+
+#' @title Fill Vector with Values for a Distance Matrix
+#' @description Create a vector that can be used as backing store for a distance
+#'   matrix by applying a function \code{FUN} to all pairings that arise when
+#'   comparing all the objects in \code{X}.
+#' @param X objects to compare
+#' @param FUN the function to apply to all index pairs \code{i}, \code{j} of
+#'   objects to compare
+#' @return a vector of length \code{n(n-1)/2} with the results of \code{FUN}
+#' @export dist.apply
+#' @include indexing.R
+dist.apply <- function(X, FUN) {
+  n <- length(X);
+  stopifnot(n > 1L);
+  res <- vector(mode="numeric", length=dist.slots(n));
+  index <- 0L;
+  for(i in seq_len(n-1L)) {
+    x <- X[[i]];
+    for(j in seq.int(from=(i+1L), to=n, by=1L)) {
+      index <- (index + 1L);
+      res[index] <- FUN(x, X[[j]]);
     }
   }
   stopifnot(identical(index, length(res)));
