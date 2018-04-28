@@ -9,7 +9,8 @@ License: LGPL-3
 Encoding: UTF-8
 URL: http://www.github.com/thomasWeise/distanceR
 BugReports: http://www.github.com/thomasWeise/distanceRissues
-Imports: stats (>= 3.3.2)
+Imports: parallel (>= 3.3.2),
+         stats (>= 3.3.2)
 Suggests: testthat (>= 2.0.0),
           roxygen2 (>= 6.0.1)
 ByteCompile: true

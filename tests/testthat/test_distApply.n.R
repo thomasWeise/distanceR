@@ -1,6 +1,8 @@
 library("distanceR")
 context("dist.apply.n")
 
+slow.tests <- is.na(Sys.getenv("TRAVIS", unset=NA))
+
 FUN <- function(i,j) i*1000+j;
 
 tester <- function(n) {
@@ -11,7 +13,18 @@ tester <- function(n) {
     index <- index + 1L;
     expect_identical(dm[index], FUN(ij[1], ij[2]));
   }
+
+  expect_identical(dm, dist.apply.n(n=n, FUN=FUN, cores=2L));
+  if(slow.tests) {
+    expect_identical(dm, dist.apply.n(n=n, FUN=FUN, cores=3L));
+    expect_identical(dm, dist.apply.n(n=n, FUN=FUN, cores=4L));
+    expect_identical(dm, dist.apply.n(n=n, FUN=FUN, cores=5L));
+    expect_identical(dm, dist.apply.n(n=n, FUN=FUN, cores=6L));
+    expect_identical(dm, dist.apply.n(n=n, FUN=FUN, cores=7L));
+    expect_identical(dm, dist.apply.n(n=n, FUN=FUN, cores=8L));
+  }
 }
+
 
 test_that("Test dist.apply.n n=2", {
   tester(2);

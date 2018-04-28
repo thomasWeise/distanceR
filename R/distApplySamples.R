@@ -22,6 +22,7 @@
 #'   \code{X} into a single value
 #' @param FUN.VALUE the value to be used for situations where an element of
 #'   \code{X} contains no samples
+#' @param  cores the number of cores to be used for parallel computation
 #' @return a vector of values that can be used to produce a distance matrix
 #' @export dist.apply.samples
 #' @include distApply.R
@@ -30,7 +31,8 @@
 #' @seealso dist.create
 dist.apply.samples <- function(X, FUN=distance.euclidean,
                                sampler=identity, aggregate=mean,
-                               FUN.VALUE=+Inf) {
+                               FUN.VALUE=+Inf,
+                               cores=1L) {
   dist.apply(X=X, FUN=function(a, b) {
     a.samples <- sampler(a);
     a.length  <- length(a.samples);
@@ -45,7 +47,7 @@ dist.apply.samples <- function(X, FUN=distance.euclidean,
                    b.samples[[1L + (z %%  b.length)]]),
                FUN.VALUE = FUN.VALUE)
     ))
-  })
+  }, cores=cores)
 }
 
 

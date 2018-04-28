@@ -4,13 +4,15 @@
 \alias{dist.apply}
 \title{Fill Vector with Values for a Distance Matrix}
 \usage{
-dist.apply(X, FUN = distance.euclidean)
+dist.apply(X, FUN = distance.euclidean, cores = 1L)
 }
 \arguments{
 \item{X}{objects to compare}
 
 \item{FUN}{the function to apply to all pairs of elements \code{a}, \code{b}
 from \code{X}}
+
+\item{cores}{the number of cores to be used for parallel computation}
 }
 \value{
 a vector of length \code{n(n-1)/2} with the results of \code{FUN}

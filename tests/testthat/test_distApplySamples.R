@@ -1,6 +1,8 @@
 library("distanceR")
 context("dist.apply.samples")
 
+slow.tests <- is.na(Sys.getenv("TRAVIS", unset=NA))
+
 tester <- function(n) {
   data <- lapply(1:n, FUN=function(i) vapply(X=1:i, FUN=identity, FUN.VALUE=-Inf));
 
@@ -24,6 +26,18 @@ tester <- function(n) {
     }
 
     expect_identical(dm[index], mean(v));
+  }
+
+  expect_identical(dm, dist.apply.samples(data, cores=2L));
+  if(slow.tests) {
+    expect_identical(dm, dist.apply.samples(data, cores=3L));
+    expect_identical(dm, dist.apply.samples(data, cores=4L));
+    expect_identical(dm, dist.apply.samples(data, cores=5L));
+    expect_identical(dm, dist.apply.samples(data, cores=6L));
+    expect_identical(dm, dist.apply.samples(data, cores=7L));
+    expect_identical(dm, dist.apply.samples(data, cores=8L));
+    expect_identical(dm, dist.apply.samples(data, cores=9L));
+    expect_identical(dm, dist.apply.samples(data, cores=10L));
   }
 }
 

@@ -4,13 +4,15 @@
 \alias{dist.apply.n}
 \title{Fill Vector with Values for a Distance Matrix}
 \usage{
-dist.apply.n(n, FUN)
+dist.apply.n(n, FUN, cores = 1L)
 }
 \arguments{
 \item{n}{the number of objects to compare}
 
 \item{FUN}{the function to apply to all index pairs \code{i}, \code{j} of
 objects to compare}
+
+\item{cores}{the number of cores to be used for parallel computation}
 }
 \value{
 a vector of length \code{n(n-1)/2} with the results of \code{FUN}
