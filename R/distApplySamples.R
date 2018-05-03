@@ -49,19 +49,3 @@ dist.apply.samples <- function(X, FUN=distance.euclidean,
     ))
   }, cores=cores)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

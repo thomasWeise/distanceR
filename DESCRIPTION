@@ -22,4 +22,5 @@ Collate:
     'distances.R'
     'distApply.R'
     'distApplySamples.R'
+    'ranker.R'
     'distApplySamplesRanked.R'

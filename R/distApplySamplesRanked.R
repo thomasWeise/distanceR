@@ -1,29 +1,60 @@
+#' @title Create a Distance Vector based on Normalized Ranking of Distances
+#' @description Create a distance matrix/vector where the actual distances from
+#'   samples are replaced by their mean ranks. This should allow for
+#'   scale-independent, robust distance matrices.
+#' @param X the list or vector of elements to be compared
+#' @param FUN the distance function, a function accepting two \emph{samples} and
+#'   returning one distance value
+#' @param sampler the sampling function, returning a vector or list of samples
+#'   for an element of \code{X}
+#' @param rank.all the ranking to be applied to all distances
+#' @param rank.fromSingle the ranking to be applied to all the distances from
+#'   one specific sample to the other samples
+#' @param aggregate the aggregation function which will join distances computed
+#'   with \code{FUN} of all combinations of the samples from two elements of
+#'   \code{X} into a single value
+#' @param FUN.VALUE the value to be used for situations where an element of
+#'   \code{X} contains no samples
+#' @param  cores the number of cores to be used for parallel computation
+#' @return a vector of values that can be used to produce a distance matrix
+#' @include indexing.R
+#' @include distApply.R
+#' @include ranker.R
+#' @export dist.apply.samples.ranked
 dist.apply.samples.ranked <- function(X, FUN=distance.euclidean,
                                       sampler=identity,
-                                      ranker=rank,
+                                      rank.all=rank.dist,
+                                      rank.fromSingle=identity,
                                       aggregate=mean,
-                                      FUN.VALUE=+Inf) {
+                                      FUN.VALUE=+Inf,
+                                      cores=1L) {
   n <- length(X);
   stopifnot(n > 1L);
 
-  # pre-allocate the sizes and samples structures
-  sizes   <- vector(mode="integer", length=n);
-  samples <- vector(mode="list", length=n);
+  # get the sizes and group indexes
+  sizes     <- vapply(X=X, FUN=length, FUN.VALUE=0L);
+  stopifnot(identical(length(sizes), n));
+  totalSize <- sum(sizes);
 
-  # cache all the samples
-  totalSize <- 0L;
-  for(i in seq_len(n)) {
-    i <- force(i);
-    samp <- lapply(X=sampler(X[[i]]),
-                   FUN=function(x) { attr(x, "i") <- i; x });
-    samples[[i]] <- samp;
-    s <- length(samp);
-    sizes[[i]] <- s;
-    totalSize <- (totalSize + s);
-  }
+  # get the group indexes
+  groups    <- unlist(lapply(X=seq_len(n), FUN=function(i) rep(x=i, times=sizes[[i]])),
+                      recursive=TRUE, use.names=FALSE);
+  stopifnot(identical(length(groups), totalSize));
+
   # flatten the list of samples
-  samples <- unlist(samp, recursive = FALSE, use.names = FALSE);
-  stopifnot(identical(length(samples), totalSize));
+  X <- unlist(X, recursive = FALSE, use.names = FALSE);
+  stopifnot(identical(length(X), totalSize));
+
+  # wrap the distance function such that distances are only computed for
+  # elements in different groups and distances for elements in the same group
+  # are considered to be NA
+  fun <- function(i, j) if(identical(groups[i], groups[j])) NA else FUN(X[[i]], X[[j]]);
+
+  # compute all the single distances using the wrapped distance function and
+  # build the huge distance matrix, with NA for intra-group distances - this can
+  # be done in parallel
+  dm <- rank.all(dist.apply.n(n=length(X), FUN=fun, cores=cores));
+  X <- NULL;
 
   # create the distances storage: for a pair i, j, we need sample_count(i) + sample_count(j) entries
   results.sizes <- dist.apply.samples(X=sizes, FUN=`+`);
@@ -39,40 +70,45 @@ dist.apply.samples.ranked <- function(X, FUN=distance.euclidean,
       computed <- vector(mode="numeric", length=n.cur);
     }
 
-    # get the sample
-    a   <- samples[[i]];
-    a.i <- attr(a, "i");
+    # get the group of the first sample
+    i.g <- groups[i];
 
     # compute all distances
     index <- 0L;
     for(j in seq_len(totalSize)) {
-      b <- samples[[j]];
-      b.i <- attr(b, "i");
-      if(!(identical(a.i, b.i))) {
+      if(!(identical(i.g, groups[j]))) {
         index <- index + 1L;
-        computed[[index]] <- FUN(a.i, b.i);
+        computed[index] <- dist.get(dist=dm, i=i, j=j, n=totalSize);
       }
     }
     stopifnot(identical(index, n.cur));
 
     # rank the distances
-    computed <- ranker(computed);
+    ranks <- rank.fromSingle(computed);
 
     # store back the results
     index <- 0L;
     for(j in seq_len(totalSize)) {
-      b.i <- attr(samples[[j]], "i");
-      if(!(identical(a.i, b.i))) {
+
+      if(!(identical(i.g, groups[j]))) {
         index <- index + 1L;
-        didx <- dist.index(a.i, b.i, n);
+        didx <- dist.index(i, j, n);
         s <- results.sizes[[didx]];
         results.sizes[[didx]] <- (s - 1L);
-        results[[didx]][s] <- computed[[index]];
+        results[[didx]][s] <- ranks[[index]];
       }
     }
   }
   stopifnot(all(results.sizes == 0L));
 
+  # dispose all no-longer needed data
+  dm <- NULL;
+  sizes <- NULL;
+  groups <- NULL;
+  ranks <- NULL;
+  computed <- NULL;
+
   # collapse the results into a distance matrix data list
-  return(vapply(X=results, FUN=aggregate, FUN.VALUE=FUN.VALUE));
+  return(vapply(X=results, FUN=function(x) { if(length(x)>0L) aggregate(x) else FUN.VALUE },
+                FUN.VALUE=FUN.VALUE));
 }

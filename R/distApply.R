@@ -10,7 +10,7 @@
 #' @export dist.apply.n
 dist.apply.n <- function(n, FUN, cores=1L) {
   stopifnot(n > 1L);
-  return(dist.apply(X=1:n, FUN=FUN, cores=cores));
+  return(dist.apply(X=seq_len(n), FUN=FUN, cores=cores));
 }
 
 #' @title Fill Vector with Values for a Distance Matrix
