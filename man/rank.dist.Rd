@@ -4,10 +4,14 @@
 \alias{rank.dist}
 \title{Rank a Vector of Distance Values}
 \usage{
-rank.dist(X)
+rank.dist(X, na.value = 2)
 }
 \arguments{
 \item{X}{the array of distance values}
+
+\item{na.value}{the value to be used for NA distances. since all "normal"
+distances will be normalized into \code{[0, 1]}, a value bigger than that
+would make sense, say \code{2} or \code{+Inf}.}
 }
 \value{
 an array with normalized distance ranks

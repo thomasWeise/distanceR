@@ -11,7 +11,11 @@ tester.1 <- function(n) {
 
   dists <- dist.apply(data);
   ranks <- rank(dists);
-  ranks <- ranks / max(ranks);
+  if(min(ranks) >= max(ranks)) {
+    ranks <- rep(0.5, length(ranks));
+  } else {
+    ranks <- ranks / max(ranks);
+  }
 
   expect_equal(dm, ranks);
 
