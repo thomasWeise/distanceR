@@ -31,6 +31,10 @@ dist.apply.samples.ranked <- function(X, FUN=distance.euclidean,
   n <- length(X);
   stopifnot(n > 1L);
 
+  # extract and cache the samples
+  X <- lapply(X=X, FUN=sampler);
+  stopifnot(identical(n, length(X)));
+
   # get the sizes and group indexes
   sizes     <- vapply(X=X, FUN=length, FUN.VALUE=0L);
   stopifnot(identical(length(sizes), n));
@@ -53,25 +57,25 @@ dist.apply.samples.ranked <- function(X, FUN=distance.euclidean,
   # compute all the single distances using the wrapped distance function and
   # build the huge distance matrix, with NA for intra-group distances - this can
   # be done in parallel
-  dm <- rank.all(dist.apply.n(n=length(X), FUN=fun, cores=cores));
+  dm <- rank.all(dist.apply.n(n=totalSize, FUN=fun, cores=cores));
   X <- NULL;
 
-  # create the distances storage: for a pair i, j, we need sample_count(i) + sample_count(j) entries
-  results.sizes <- dist.apply.samples(X=sizes, FUN=`+`);
+  # create the distances storage: for a pair i, j, we need 2*sample_count(i) * sample_count(j) entries
+  results.sizes <- dist.apply.samples(X=sizes, FUN=function(i,j) 2*i*j);
   results <- lapply(X=results.sizes,
                     FUN=function(i) vector(mode="numeric", length=i));
 
   # now we compute each and every distance
   computed <- NULL;
   for(i in seq_len(totalSize)) {
+    # get the group of the first sample
+    i.g <- groups[i];
+
     # allocate the vector if necessary
-    n.cur <- (totalSize-sizes[[i]]);
+    n.cur <- (totalSize-sizes[[i.g]]);
     if(!identical(n.cur, length(computed))) {
       computed <- vector(mode="numeric", length=n.cur);
     }
-
-    # get the group of the first sample
-    i.g <- groups[i];
 
     # compute all distances
     index <- 0L;
@@ -89,10 +93,10 @@ dist.apply.samples.ranked <- function(X, FUN=distance.euclidean,
     # store back the results
     index <- 0L;
     for(j in seq_len(totalSize)) {
-
-      if(!(identical(i.g, groups[j]))) {
+      j.g <- groups[j];
+      if(!(identical(i.g, j.g))) {
         index <- index + 1L;
-        didx <- dist.index(i, j, n);
+        didx <- dist.index(i.g, j.g, n);
         s <- results.sizes[[didx]];
         results.sizes[[didx]] <- (s - 1L);
         results[[didx]][s] <- ranks[[index]];
