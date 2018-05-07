@@ -5,7 +5,7 @@
 \title{Compute the Distance between Two Objects based on a
   \code{\link[stats]{dist}} Object}
 \usage{
-dist.get(distObj, i, j, n = attr(x = distObj, which = "Size", exact = TRUE))
+dist.get(distObj, i, j, n = .dist.size(distObj))
 }
 \arguments{
 \item{distObj}{the instance of \code{\link[stats]{dist}}}

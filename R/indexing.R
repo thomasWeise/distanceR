@@ -44,6 +44,9 @@ dist.ij <- function(index,n) { # given index, return row and column
   c(nr, n - (((2L*n - nr+1L)*nr) %/% 2L) + index + nr)
 }
 
+# get the size of a \code{\link[stats]{dist}} object
+.dist.size <- function(distObj) attr(x=distObj, which="Size", exact=TRUE)
+
 #' @title Compute the Distance between Two Objects based on a
 #'   \code{\link[stats]{dist}} Object
 #' @description Compute the index into a \code{\link[stats]{dist}} object based
@@ -55,7 +58,7 @@ dist.ij <- function(index,n) { # given index, return row and column
 #' @param n the number of rows/columns of the distance matrix
 #' @return the distance between the objects at indices \code{i} and \code{j}
 #' @export dist.get
-dist.get <- function(distObj, i, j, n=attr(x=distObj, which="Size", exact=TRUE)){
+dist.get <- function(distObj, i, j, n=.dist.size(distObj)){
   if(i == j) 0L else distObj[
     if(i > j) {
     n*(j-1L) - ((j*(j-1L))) %/% 2L + i - j
