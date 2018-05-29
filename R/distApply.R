@@ -6,11 +6,12 @@
 #' @param FUN the function to apply to all index pairs \code{i}, \code{j} of
 #'   objects to compare
 #' @param  cores the number of cores to be used for parallel computation
+#' @param  logging the logging setup, see \code{\link[utilizeR]{makeLogger}}
 #' @return a vector of length \code{n(n-1)/2} with the results of \code{FUN}
 #' @export dist.apply.n
-dist.apply.n <- function(n, FUN, cores=1L) {
+dist.apply.n <- function(n, FUN, cores=1L, logging=FALSE) {
   stopifnot(n > 1L);
-  return(dist.apply(X=seq_len(n), FUN=FUN, cores=cores));
+  return(dist.apply(X=seq_len(n), FUN=FUN, cores=cores, logging=logging));
 }
 
 #' @title Fill Vector with Values for a Distance Matrix
@@ -21,20 +22,28 @@ dist.apply.n <- function(n, FUN, cores=1L) {
 #' @param FUN the function to apply to all pairs of elements \code{a}, \code{b}
 #'   from \code{X}
 #' @param  cores the number of cores to be used for parallel computation
+#' @param  logging the logging setup, see \code{\link[utilizeR]{makeLogger}}
 #' @return a vector of length \code{n(n-1)/2} with the results of \code{FUN}
 #' @export dist.apply
 #' @include indexing.R
 #' @include distances.R
 #' @importFrom parallel mclapply
-dist.apply <- function(X, FUN=distance.euclidean, cores=1L) {
+#' @importFrom utilizeR makeLogger
+dist.apply <- function(X, FUN=distance.euclidean, cores=1L, logging=FALSE) {
   n <- length(X);
   stopifnot(n > 1L);
+
+  logging <- makeLogger(logging, cores);
 
   # the required length
   len <- dist.slots(n);
 
   # cores <= 1: sequential method
   if(cores <= 1L) {
+    if(!is.null(logging)) {
+      logging("Computing ", len, " distance from ", n,
+              " objects in a single-thread manner.")
+    }
     # allocate destination vector
     res <- vector(mode="numeric", length=len);
     index <- 0L;
@@ -48,7 +57,16 @@ dist.apply <- function(X, FUN=distance.euclidean, cores=1L) {
     }
     # final sanity check
     stopifnot(identical(index, len));
+    if(!is.null(logging)) {
+      logging("Finished computing the distances.");
+    }
     return(res);
+  }
+
+  if(!is.null(logging)) {
+    logging("Computing ", len, " distance from ", n,
+            " objects in a multi-thread manner on ",
+            cores, " cores.");
   }
 
   # ok, cores > 1
@@ -68,5 +86,8 @@ dist.apply <- function(X, FUN=distance.euclidean, cores=1L) {
 
   # final sanity check
   stopifnot(identical(length(res), len));
+  if(!is.null(logging)) {
+    logging("Finished computing the distances.");
+  }
   return(res);
 }

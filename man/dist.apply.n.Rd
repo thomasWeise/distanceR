@@ -4,7 +4,7 @@
 \alias{dist.apply.n}
 \title{Fill Vector with Values for a Distance Matrix}
 \usage{
-dist.apply.n(n, FUN, cores = 1L)
+dist.apply.n(n, FUN, cores = 1L, logging = FALSE)
 }
 \arguments{
 \item{n}{the number of objects to compare}
@@ -13,6 +13,8 @@ dist.apply.n(n, FUN, cores = 1L)
 objects to compare}
 
 \item{cores}{the number of cores to be used for parallel computation}
+
+\item{logging}{the logging setup, see \code{\link[utilizeR]{makeLogger}}}
 }
 \value{
 a vector of length \code{n(n-1)/2} with the results of \code{FUN}

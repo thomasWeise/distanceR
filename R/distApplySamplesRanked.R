@@ -16,20 +16,24 @@
 #' @param FUN.VALUE the value to be used for situations where an element of
 #'   \code{X} contains no samples
 #' @param  cores the number of cores to be used for parallel computation
+#' @param  logging the logging setup, see \code{\link[utilizeR]{makeLogger}}
 #' @return a vector of values that can be used to produce a distance matrix
 #' @include indexing.R
 #' @include distApply.R
 #' @include ranker.R
 #' @export dist.apply.samples.ranked
+#' @importFrom utilizeR makeLogger
 dist.apply.samples.ranked <- function(X, FUN=distance.euclidean,
                                       sampler=identity,
                                       rank.all=rank.dist,
                                       rank.fromSingle=identity,
                                       aggregate=mean,
                                       FUN.VALUE=+Inf,
-                                      cores=1L) {
+                                      cores=1L,
+                                      logging=FALSE) {
   n <- length(X);
   stopifnot(n > 1L);
+  logging <- makeLogger(logging, cores);
 
   # extract and cache the samples
   X <- lapply(X=X, FUN=sampler);
@@ -39,6 +43,25 @@ dist.apply.samples.ranked <- function(X, FUN=distance.euclidean,
   sizes     <- vapply(X=X, FUN=length, FUN.VALUE=0L);
   stopifnot(identical(length(sizes), n));
   totalSize <- sum(sizes);
+  if(!is.null(logging)) {
+    logging("Computing distance matrix based on ranking sample distances, for ",
+            totalSize, " samples in total using, with",
+            (if(identical(rank.all, identity)) {
+              if(identical(rank.fromSingle, identity)) {
+                "out any ranking"
+              } else {
+                "local ranking"
+              }
+            } else {
+              if(identical(rank.fromSingle, identity)) {
+                " global ranking"
+              } else {
+                " global and local ranking"
+              }
+            }),
+            " and aggregate ",
+            as.character(substitute(aggregate)), ".");
+  }
 
   # get the group indexes
   groups    <- unlist(lapply(X=seq_len(n), FUN=function(i) rep(x=i, times=sizes[[i]])),
@@ -57,7 +80,13 @@ dist.apply.samples.ranked <- function(X, FUN=distance.euclidean,
   # compute all the single distances using the wrapped distance function and
   # build the huge distance matrix, with NA for intra-group distances - this can
   # be done in parallel
-  dm <- rank.all(dist.apply.n(n=totalSize, FUN=fun, cores=cores));
+  if(!is.null(logging)) {
+    logging("Now computing a big distance matrix with the distances between all samples.");
+  }
+  dm <- rank.all(dist.apply.n(n=totalSize, FUN=fun, cores=cores, logging=logging));
+  if(!is.null(logging)) {
+    logging("Done computing the big distance matrix, now computing the rankings.");
+  }
   X <- NULL;
 
   # create the distances storage: for a pair i, j, we need 2*sample_count(i) * sample_count(j) entries
@@ -112,7 +141,15 @@ dist.apply.samples.ranked <- function(X, FUN=distance.euclidean,
   ranks <- NULL;
   computed <- NULL;
 
+  if(!is.null(logging)) {
+    logging("Finished computing distance samples, now collapsing distances using aggregate.");
+  }
+
   # collapse the results into a distance matrix data list
-  return(vapply(X=results, FUN=function(x) { if(length(x)>0L) aggregate(x) else FUN.VALUE },
-                FUN.VALUE=FUN.VALUE));
+  ret <- vapply(X=results, FUN=function(x) { if(length(x)>0L) aggregate(x) else FUN.VALUE },
+                FUN.VALUE=FUN.VALUE);
+  if(!is.null(logging)) {
+    logging("Done computing distance matrix.");
+  }
+  return(ret);
 }

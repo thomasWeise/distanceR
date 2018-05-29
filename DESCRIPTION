@@ -1,7 +1,7 @@
 Package: distanceR
 Type: Package
 Title: An R Package for Creating and Dealing with \code{\link[stats]{dist}} Objects 
-Version: 0.8.0
+Version: 0.8.1
 Author: Dr. Thomas Weise <tweise@hfuu.edu.cn>
 Maintainer: Dr. Thomas Weise <tweise@hfuu.edu.cn>
 Description: With this package we can build and manipulate distance matrices of class \code{\link[stats]{dist}}.
@@ -10,10 +10,12 @@ Encoding: UTF-8
 URL: http://www.github.com/thomasWeise/distanceR
 BugReports: http://www.github.com/thomasWeise/distanceR/issues
 Imports: parallel (>= 3.3.2),
-         stats (>= 3.3.2)
+         stats (>= 3.3.2),
+         utilizeR (>= 0.8.3)
 Suggests: testthat (>= 2.0.0),
           roxygen2 (>= 6.0.1)
 Depends: R (>= 3.3.0)
+Remotes: github::thomasWeise/utilizeR
 ByteCompile: true
 LazyData: true
 RoxygenNote: 6.0.1.9000

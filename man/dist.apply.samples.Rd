@@ -5,7 +5,7 @@
 \title{Build Distance Matrix Data based on Per-Index Sampling}
 \usage{
 dist.apply.samples(X, FUN = distance.euclidean, sampler = identity,
-  aggregate = mean, FUN.VALUE = +Inf, cores = 1L)
+  aggregate = mean, FUN.VALUE = +Inf, cores = 1L, logging = FALSE)
 }
 \arguments{
 \item{X}{the list or vector of elements to be compared}
@@ -24,6 +24,8 @@ with \code{FUN} of all combinations of the samples from two elements of
 \code{X} contains no samples}
 
 \item{cores}{the number of cores to be used for parallel computation}
+
+\item{logging}{the logging setup, see \code{\link[utilizeR]{makeLogger}}}
 }
 \value{
 a vector of values that can be used to produce a distance matrix

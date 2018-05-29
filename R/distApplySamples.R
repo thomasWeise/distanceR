@@ -23,17 +23,26 @@
 #' @param FUN.VALUE the value to be used for situations where an element of
 #'   \code{X} contains no samples
 #' @param  cores the number of cores to be used for parallel computation
+#' @param  logging the logging setup, see \code{\link[utilizeR]{makeLogger}}
 #' @return a vector of values that can be used to produce a distance matrix
 #' @export dist.apply.samples
 #' @include distApply.R
 #' @include distances.R
 #' @seealso dist.apply
 #' @seealso dist.create
+#' @importFrom utilizeR makeLogger
 dist.apply.samples <- function(X, FUN=distance.euclidean,
                                sampler=identity, aggregate=mean,
                                FUN.VALUE=+Inf,
-                               cores=1L) {
-  dist.apply(X=X, FUN=function(a, b) {
+                               cores=1L,
+                               logging=FALSE) {
+  logging <- makeLogger(logging, cores);
+  if(!is.null(logging)) {
+    logging("Computing sample-based distances using aggregate ",
+            as.character(substitute(aggregate)), ".");
+  }
+
+  ret <- dist.apply(X=X, FUN=function(a, b) {
     a.samples <- sampler(a);
     a.length  <- length(a.samples);
     if(a.length <= 0L) { return(FUN.VALUE); }
@@ -47,5 +56,10 @@ dist.apply.samples <- function(X, FUN=distance.euclidean,
                    b.samples[[1L + (z %%  b.length)]]),
                FUN.VALUE = FUN.VALUE)
     ))
-  }, cores=cores)
+  }, cores=cores, logging=logging);
+
+  if(!is.null(logging)) {
+    logging("Finished computing sample-based distances.");
+  }
+  return(ret);
 }
