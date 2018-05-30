@@ -1,12 +1,12 @@
 library("distanceR")
-context("dist.apply.samples 1")
+context("dist.apply.samples 3")
 
 slow.tests <- is.na(Sys.getenv("TRAVIS", unset=NA))
 
 tester.1 <- function(n) {
   data <- lapply(1:n, FUN=function(i) vapply(X=1:i, FUN=identity, FUN.VALUE=-Inf));
 
-  dm <- dist.apply.samples(data);
+  dm <- dist.apply.samples(data, aggregate=sd);
   expect_length(dm, dist.slots(n));
 
   index <- 0L;
@@ -25,19 +25,19 @@ tester.1 <- function(n) {
       }
     }
 
-    expect_identical(dm[index], mean(v));
+    expect_identical(dm[index], sd(v));
   }
 
-  expect_identical(dm, dist.apply.samples(data, cores=2L));
+  expect_identical(dm, dist.apply.samples(data, aggregate=sd, cores=2L));
   if(slow.tests) {
-    expect_identical(dm, dist.apply.samples(data, cores=3L));
-    expect_identical(dm, dist.apply.samples(data, cores=4L));
-    expect_identical(dm, dist.apply.samples(data, cores=5L));
-    expect_identical(dm, dist.apply.samples(data, cores=6L));
-    expect_identical(dm, dist.apply.samples(data, cores=7L));
-    expect_identical(dm, dist.apply.samples(data, cores=8L));
-    expect_identical(dm, dist.apply.samples(data, cores=9L));
-    expect_identical(dm, dist.apply.samples(data, cores=10L));
+    expect_identical(dm, dist.apply.samples(data, aggregate=sd, cores=3L));
+    expect_identical(dm, dist.apply.samples(data, aggregate=sd, cores=4L));
+    expect_identical(dm, dist.apply.samples(data, aggregate=sd, cores=5L));
+    expect_identical(dm, dist.apply.samples(data, aggregate=sd, cores=6L));
+    expect_identical(dm, dist.apply.samples(data, aggregate=sd, cores=7L));
+    expect_identical(dm, dist.apply.samples(data, aggregate=sd, cores=8L));
+    expect_identical(dm, dist.apply.samples(data, aggregate=sd, cores=9L));
+    expect_identical(dm, dist.apply.samples(data, aggregate=sd, cores=10L));
   }
 }
 

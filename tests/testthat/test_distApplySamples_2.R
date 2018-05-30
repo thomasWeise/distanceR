@@ -1,5 +1,5 @@
 library("distanceR")
-context("dist.apply.samples")
+context("dist.apply.samples 2")
 
 slow.tests <- is.na(Sys.getenv("TRAVIS", unset=NA))
 
