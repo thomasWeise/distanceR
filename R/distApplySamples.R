@@ -30,7 +30,7 @@
 #' @include distances.R
 #' @seealso dist.apply
 #' @seealso dist.create
-#' @importFrom utilizeR makeLogger
+#' @importFrom utilizeR makeLogger function.name
 dist.apply.samples <- function(X, FUN=distance.euclidean,
                                sampler=identity, aggregate=mean,
                                FUN.VALUE=+Inf,
@@ -38,8 +38,10 @@ dist.apply.samples <- function(X, FUN=distance.euclidean,
                                logging=FALSE) {
   logging <- makeLogger(logging, cores);
   if(!is.null(logging)) {
-    logging("Computing sample-based distances using aggregate ",
-            as.character(substitute(aggregate)), ".");
+    logging("Computing sample-based distances using distance function ",
+            function.name(FUN),
+            " and aggregate ",
+            function.name(aggregate), ".");
   }
 
   ret <- dist.apply(X=X, FUN=function(a, b) {

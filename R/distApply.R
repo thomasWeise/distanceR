@@ -28,7 +28,7 @@ dist.apply.n <- function(n, FUN, cores=1L, logging=FALSE) {
 #' @include indexing.R
 #' @include distances.R
 #' @importFrom parallel mclapply
-#' @importFrom utilizeR makeLogger
+#' @importFrom utilizeR makeLogger function.name
 dist.apply <- function(X, FUN=distance.euclidean, cores=1L, logging=FALSE) {
   n <- length(X);
   stopifnot(n > 1L);
@@ -41,8 +41,9 @@ dist.apply <- function(X, FUN=distance.euclidean, cores=1L, logging=FALSE) {
   # cores <= 1: sequential method
   if(cores <= 1L) {
     if(!is.null(logging)) {
-      logging("Computing ", len, " distance from ", n,
-              " objects in a single-thread manner.")
+      logging("Computing ", len, " distances from ", n,
+              " objects in a single-threaded manner using distance function ",
+              function.name(FUN), ".");
     }
     # allocate destination vector
     res <- vector(mode="numeric", length=len);
@@ -64,9 +65,10 @@ dist.apply <- function(X, FUN=distance.euclidean, cores=1L, logging=FALSE) {
   }
 
   if(!is.null(logging)) {
-    logging("Computing ", len, " distance from ", n,
-            " objects in a multi-thread manner on ",
-            cores, " cores.");
+    logging("Computing ", len, " distances from ", n,
+            " objects in a multi-threaded manner on ", cores,
+            " cores using distance function ",
+            function.name(FUN), ".");
   }
 
   # ok, cores > 1

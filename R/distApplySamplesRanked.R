@@ -22,7 +22,7 @@
 #' @include distApply.R
 #' @include ranker.R
 #' @export dist.apply.samples.ranked
-#' @importFrom utilizeR makeLogger
+#' @importFrom utilizeR makeLogger function.name
 dist.apply.samples.ranked <- function(X, FUN=distance.euclidean,
                                       sampler=identity,
                                       rank.all=rank.dist,
@@ -50,7 +50,7 @@ dist.apply.samples.ranked <- function(X, FUN=distance.euclidean,
               if(identical(rank.fromSingle, identity)) {
                 "out any ranking"
               } else {
-                "local ranking"
+                " local ranking"
               }
             } else {
               if(identical(rank.fromSingle, identity)) {
@@ -59,8 +59,8 @@ dist.apply.samples.ranked <- function(X, FUN=distance.euclidean,
                 " global and local ranking"
               }
             }),
-            " and aggregate ",
-            as.character(substitute(aggregate)), ".");
+            ", distance function ", function.name(FUN),
+            " and aggregate ", function.name(aggregate), ".");
   }
 
   # get the group indexes
