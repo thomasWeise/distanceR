@@ -21,10 +21,20 @@ dist.index <- function(i, j, n) { # given row, column, and n, return index
 #' @description This function receives the number \code{n} of objects to compare
 #'   and computes how many different distances will be stored in a distance
 #'   matrix, i.e., what the number of slots of a \code{\link[stats]{dist}}
-#'   object will be.
+#'   object will be. The inverse function is \code{\link{dist.n}}.
 #' @param n the number of objects to compare
 #' @return the required number of slots in a distance matrix
+#' @seealso dist.n
 #' @export dist.slots
+#' @examples
+#' dist.slots(1)
+#' # 0 ## (no distance between 1 object)
+#' dist.slots(2)
+#' # 1 ## (one distance between 2 objects)
+#' dist.slots(3)
+#' # 3 ## (AB, AC, BC)
+#' dist.slots(4)
+#' # 6 ## (AB, AC, AD, BC, BD, CD)
 dist.slots <- function(n) {
   if(n > 1L) { (n * (n - 1L)) %/% 2L }
   else { 0L }
@@ -46,6 +56,45 @@ dist.ij <- function(index,n) { # given index, return row and column
 
 # get the size of a \code{\link[stats]{dist}} object
 .dist.size <- function(distObj) attr(x=distObj, which="Size", exact=TRUE)
+
+#' @title Compute the Number of Objects from the Number of Slots
+#' @description Given the number of \code{slots} of a distance matric, get the
+#'   number of objects whose distance is computed. This is the inverse function
+#'   to \code{\link{dist.slots}}.
+#' @param slots the number of slots in a distance matrix
+#' @return the number of objects whose distances are stored in the matrix
+#' @seealso dist.slots
+#' @export dist.n
+#' @examples
+#' dist.slots(10)
+#' # 45
+#' dist.n(45)
+#' # 10
+dist.n <- function(slots) {
+  if(slots >= 1L) (as.integer(sqrt((8L*slots) + 1L)) + 1L) %/% 2L
+  else 1L
+}
+
+#' @title Get the Number of Objects that were used to Build a Distance Matrix
+#' @description Given a distance matrix or plain vector \code{distObj}, find the
+#'   number of objects whose distances can be represented by \code{distObj}.
+#'   This function first tries to extract of \code{Size} attribute from the object.
+#'   If that fails, it will use \code{\link{dist.n}} to compute the size based on
+#'   the object's length.
+#' @param distObj the distance object, matrix, or vector
+#' @return the number of objects whose distance can be represented in this
+#' @export dist.n.from.dm
+#' @seealso dist.n
+#' @examples
+#' m <- matrix(rnorm(n=40), nrow=8)
+#' d <- dist(m)
+#' dist.n.from.dm(d)
+#' # 8
+dist.n.from.dm <- function(distObj) {
+  s <- .dist.size(distObj);
+  if(is.null(s)) dist.n(length(distObj))
+  else as.integer(s)
+}
 
 #' @title Compute the Distance between Two Objects based on a
 #'   \code{\link[stats]{dist}} Object

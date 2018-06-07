@@ -36,3 +36,19 @@ test_that("Test indexing 2", {
     expect_equal(dist.index(indexes[[i]][1], indexes[[i]][2], n), i);
   }
 })
+
+
+test_that("Test dist.n and dist.slots", {
+
+  for(n in 1L:200L) {
+    z <- dist.slots(n);
+    expect_equal(z, (n*(n-1))/2);
+    expect_identical(n, dist.n(z));
+
+    m <- matrix(runif(n=n*5), nrow=n);
+    d <- dist(m);
+    expect_identical(n, dist.n.from.dm(d));
+    v <- as.vector(d);
+    expect_identical(n, dist.n.from.dm(v));
+  }
+})
