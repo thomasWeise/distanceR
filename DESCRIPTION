@@ -1,7 +1,7 @@
 Package: distanceR
 Type: Package
 Title: An R Package for Creating and Dealing with \code{\link[stats]{dist}} Objects 
-Version: 0.8.2
+Version: 0.8.3
 Author: Dr. Thomas Weise <tweise@hfuu.edu.cn>
 Maintainer: Dr. Thomas Weise <tweise@hfuu.edu.cn>
 Description: With this package we can build and manipulate distance matrices of class \code{\link[stats]{dist}}.
