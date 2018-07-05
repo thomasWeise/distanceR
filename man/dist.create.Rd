@@ -4,12 +4,12 @@
 \alias{dist.create}
 \title{Create an instance of \code{\link[stats]{dist}}}
 \usage{
-dist.create(distances, names)
+dist.create(distances, names = NULL)
 }
 \arguments{
 \item{distances}{the distance vector}
 
-\item{names}{the vector of names}
+\item{names}{the vector of names or \code{NULL} if no names are needed}
 }
 \value{
 an instance \code{\link[stats]{dist}}
